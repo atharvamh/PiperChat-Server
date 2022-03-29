@@ -9,6 +9,8 @@ const Chat = () => {
 
     const [name, setname] = useState('');
     const [room, setroom] = useState('');
+    const [message, setMessage] = useState('');
+    const [messages, setMessages] = useState([]);
     const ENDPOINT = 'localhost:3000'
     const url = window.location.search;
 
@@ -22,16 +24,40 @@ const Chat = () => {
 
         socket.emit('join', {name, room});
 
-        // disconnecting the socket on component unmounting. return statement handles component unmounting
+        // // disconnecting the socket on component unmounting. return statement handles component unmounting
         return () => {
-            socket.emit('disconnect')
+            socket.disconnect();
             socket.off();
         }
     },[ENDPOINT, url])
 
+    useEffect(() => {
+        socket.on('message', (message) => {
+            setMessages([...messages, message]);
+        })
+    },[messages]);
+
+    const sendMessage = (event) => {
+        event.preventDefault();
+
+        if(message){
+            socket.emit('sendMessage', message, () => setMessage(''));
+        }
+
+        console.log(message, messages);
+    }
+
     return (
-        <div>
-            <h1>Chat</h1>
+        <div className='container'>
+            <div className='outer-container d-flex justify-content-center align-items-center vh-100'>
+                <div className='inner-container'>
+                    <input 
+                        value={message} 
+                        onChange={(event) => setMessage(event.target.value)} 
+                        onKeyPress={(event) => event.key === 'Enter' ? sendMessage(event) : null}
+                    />
+                </div>
+            </div>
         </div>
     )
 }
