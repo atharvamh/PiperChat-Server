@@ -1,24 +1,32 @@
 import React, {useState} from 'react'
 import { Link } from 'react-router-dom';
 import logo from "../../assets/images/logo.png"
-import { useAlert } from 'react-alert';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "./style.sass"
 
 
 const Join = () => {
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
-    const alert = useAlert();
 
     const validate = (event) => {
         if(name.trim().length === 0 || room.trim().length === 0){
             event.preventDefault();
-            alert.show("Name / Room empty");
+
+            toast.error(`Name / Room field is empty !`, {
+                position: toast.POSITION.TOP_CENTER,
+                autoClose : 2000,
+                className : 'custom-toast',
+                closeOnClick : true,
+                pauseOnHover : true
+            });
         }
     }
 
     return (
         <div className='container'>
+            <ToastContainer />
             <div className='outer-container d-flex justify-content-center align-items-center vh-100'>
                 <div className='inner-container'>
                     <h2 className='heading d-flex align-items-center gap-2'>
